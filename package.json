@@ -4,10 +4,13 @@
   "private": true,
   "scripts": {
     "test": "node --test -r tsx/cjs src/**/*.test.ts",
-    "build": "tsup --tsconfig tsconfig.dist.json src/index.ts"
+    "build": "tsup --tsconfig tsconfig.dist.json --format esm,cjs src/index.ts"
   },
   "exports": {
-    ".": "./dist/index.js"
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
