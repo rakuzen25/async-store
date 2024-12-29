@@ -1,10 +1,9 @@
-import { AsyncScope } from './async_scope';
+import { AsyncScope } from "./async_scope";
 
 export class AsyncVar<T> {
   private readonly symbol = Symbol(this.name);
 
-  constructor(readonly name: string) {
-  }
+  constructor(readonly name: string) {}
 
   set(value: T) {
     const scope = AsyncScope.get();

@@ -1,8 +1,7 @@
-import { AsyncLocalStorage } from 'node:async_hooks';
+import { AsyncLocalStorage } from "node:async_hooks";
 
 const asyncLocalStorage = new AsyncLocalStorage<AsyncScope>();
 
-// eslint-disable-next-line typescript/no-unsafe-declaration-merging
 export interface AsyncScope {
   [key: symbol]: unknown;
 }
@@ -12,7 +11,7 @@ export class AsyncScope {
     const scope = asyncLocalStorage.getStore();
 
     if (!scope) {
-      throw new Error('Scope not found');
+      throw new Error("Scope not found");
     }
 
     return scope;

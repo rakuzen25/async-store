@@ -1,19 +1,19 @@
-import assert from 'node:assert';
-import { describe, it } from 'node:test';
-import { AsyncVar } from './async_var';
-import { AsyncScope } from './async_scope';
+import assert from "node:assert";
+import { describe, it } from "node:test";
+import { AsyncVar } from "./async_var";
+import { AsyncScope } from "./async_scope";
 
-describe('AsyncVar', () => {
-  it('Throws if scope is undefined', () => {
-    const FooVar = new AsyncVar('Foo');
+describe("AsyncVar", () => {
+  it("Throws if scope is undefined", () => {
+    const FooVar = new AsyncVar("Foo");
 
     assert.throws(() => {
       FooVar.get();
     }, /scope.+not found/i);
   });
 
-  it('Throws if var is undefined', async () => {
-    const FooVar = new AsyncVar('Foo');
+  it("Throws if var is undefined", async () => {
+    const FooVar = new AsyncVar("Foo");
 
     await new AsyncScope().run(async () => {
       assert.throws(() => {
@@ -22,8 +22,8 @@ describe('AsyncVar', () => {
     });
   });
 
-  it('Checks if var exists', async () => {
-    const FooVar = new AsyncVar('Foo');
+  it("Checks if var exists", async () => {
+    const FooVar = new AsyncVar("Foo");
 
     await new AsyncScope().run(async () => {
       assert.equal(FooVar.exists(), false);
@@ -34,8 +34,8 @@ describe('AsyncVar', () => {
     });
   });
 
-  it('Gets var value', async () => {
-    const FooVar = new AsyncVar('Foo');
+  it("Gets var value", async () => {
+    const FooVar = new AsyncVar("Foo");
 
     await new AsyncScope().run(async () => {
       FooVar.set(1);
@@ -48,8 +48,8 @@ describe('AsyncVar', () => {
     });
   });
 
-  it('Gets var value of nested scope', async () => {
-    const FooVar = new AsyncVar('Foo');
+  it("Gets var value of nested scope", async () => {
+    const FooVar = new AsyncVar("Foo");
 
     await new AsyncScope().run(async () => {
       FooVar.set(1);
@@ -68,8 +68,8 @@ describe('AsyncVar', () => {
     });
   });
 
-  it('Gets var value of parallel scope', async () => {
-    const FooVar = new AsyncVar('Foo');
+  it("Gets var value of parallel scope", async () => {
+    const FooVar = new AsyncVar("Foo");
 
     await new AsyncScope().run(async () => {
       FooVar.set(1);

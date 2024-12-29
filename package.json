@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "lint": "oxlint",
+    "format": "biome format",
     "test": "node --test -r tsx/cjs src/**/*.test.ts",
     "build": "tsup --tsconfig tsconfig.dist.json --format esm,cjs src/index.ts"
   },
@@ -14,8 +14,8 @@
     }
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@types/node": "^22.10.2",
-    "oxlint": "^0.15.3",
     "tsup": "^8.3.5",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
