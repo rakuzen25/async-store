@@ -7,6 +7,9 @@
     "test": "node --test -r tsx/cjs src/**/*.test.ts",
     "build": "tsc --project tsconfig.dist.json"
   },
+  "files": [
+    "./dist/**/*"
+  ],
   "exports": {
     ".": {
       "require": "./dist/index.js",
