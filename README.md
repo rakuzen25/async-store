@@ -1,8 +1,14 @@
 # Async Store
 
-Async Store is a small wrap around Node's AsyncLocalStorage API that lets you define Async Vars. An Async Var is an object which holds a value that's bound to the current execution context. In other words, it enables dependency injection with minimal overhead.
+Async Store is a small wrap around Node's [`AsyncLocalStorage`](https://nodejs.org/api/async_context.html) API that lets you define Async Vars. An Async Var is an object which holds a value that's bound to the current execution context. In other words, it enables dependency injection with minimal overhead.
 
-## Examlpes
+You can get started by installing `async_store` via NPM:
+
+```sh
+npm install async_store
+```
+
+## Usage Examlpes
 
 ### Logging
 
@@ -11,6 +17,7 @@ Use a file logger in development, otherwise use a Kafka logger.
 ```ts
 /* main.ts */
 
+import { AsyncScope } from 'async_store';
 import { app } from './app';
 import { logger } from './logger';
 
@@ -52,8 +59,6 @@ export const app = {
 };
 
 function router(req: http.IncomingMessage, res: http.ServerResponse) {
-  const logger = LoggerVar.get();
-
   logger.info('Incoming request', req.socket.address());
 
   // handle request ...
@@ -62,6 +67,7 @@ function router(req: http.IncomingMessage, res: http.ServerResponse) {
 ```ts
 /* logger/index.ts */
 
+import { AsyncVar } from 'async_store';
 import { ILogger } from './logger';
 
 const LoggerVar = new AsyncVar<ILogger>('Logger');
