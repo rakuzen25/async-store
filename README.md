@@ -4,7 +4,7 @@ Async Store is a small wrap around Node's AsyncLocalStorage API that lets you de
 
 ## Examlpes
 
-### Logger injection
+### Logging
 
 Use a file logger in development, otherwise use a Kafka logger.
 
@@ -96,127 +96,71 @@ export const logger = {
 }
 ```
 
-### Request payload injection
+### Routing
+
+Extract account data from current request.
 
 ```ts
-/* router/index.ts */
+/* app.ts */
 
-import { authRouter } from './auth_router';
-import { accountRouter } from './account_router';
-import { publicRouter } from './publicRouter_router';
+import express from 'express';
+import { AsyncScope } from 'async_store';
+import { authRouter } from './routers/auth_router';
+import { accountRouter } from './routers/account_router';
+import { publicRouter } from './routers/public_router';
 
-const children = [
-  authRouter,
-  accountRouter,
-  publicRouter,
-];
+export const app = express();
 
-async function router(req: http.IncomingMessage, res: http.ServerResponse) {
-  await new AsyncScope().run(async () => {
-    route.init(req, res);
+app.use((req, res, next) => {
+  new AsyncScope().run(next);
+});
 
-    for (const child of children) {
-      if (res.statusCode) {
-        return;
-      }
-
-      await child();
-    }
-
-    if (!res.statusCode) {
-      res.statusCode = 404;
-      res.end();
-    }
-  });
-}
+appRouter.use('/auth', authRouter);
+appRouter.use('/account', accountRouter);
+appRouter.use('/public', publicRouter);
 ```
 ```ts
-/* router/auth_router.ts */
+/* routers/account_router.ts */
 
-export function authRouter() {
-  switch (route.key) {
-    case 'POST /auth/sign-in': return signIn();
-    case 'POST /auth/sign-up': return signUp();
-    case 'POST /auth/sign-out': return signOut();
-  }
-}
-```
-```ts
-/* router/account_router.ts */
+import { Router } from 'express';
+import { auth } from '../auth';
 
-export function accountRouter() {
-  auth.init();
+export const accountRouter = Router();
+
+accountRouter.use((req, res, next) => {
+  auth.init(req);
 
   if (!auth.account) {
+    res.status(401);
     return;
   }
 
-  switch (route.key) {
-    case 'GET /account/profile': return getProfile();
-    case 'PUT /account/profile': return updateProfile();
-    case 'GET /account/settings': return getSettings();
-    case 'PUT /account/settings': return updateSettings();
-  }
-}
+  next();
+})
+
+accountRouter.get('/', (req, res) => {
+  res.json(auth.account);
+});
+
+// more routes ...
 ```
 ```ts
-/* router/public_router.ts */
-
-function publicRouter() {
-  switch (route.key) {
-    case 'GET /ping': return ping();
-    case 'GET /timestamp': return getTimestamp();
-    case 'GET /info': return getInfo();
-  }
-}
-```
-```ts
-/* route.ts */
-
-import { AsyncVar } from 'async_store';
-import * as http from 'http';
-
-const RouteVar = new AsyncVar<{
-  req: http.IncomingMessage,
-  res: http.ServerResponse,
-  key: string,
-}>();
-
-export const route = {
-  get req() {
-    return RouteVar.get().req;
-  },
-
-  get res() {
-    return RouteVar.get().res;
-  },
-
-  get key() {
-    return RouteVar.get().key;
-  },
-
-  init(req: http.IncomingMessage, res: http.ServerResponse) {
-    const key = `${req.method} ${req.url.pathname}`;
-
-    RouteVar.set({ req, res, key });
-  }
-};
-```
-```ts
-/* account.ts */
+/* auth.ts */
 
 import { AsyncVar } from 'async_store';
 import { parse as parseCookie } from 'cookie';
+import * as http from 'http';
+import { Account } from './accout';
 
-const AuthVar = new AsyncVar<{ account: any }>('Auth');
+const AuthVar = new AsyncVar<{ account: Account }>('Auth');
 
 const auth = {
   get account() {
     return AuthVar.exists() ? AuthVar.get().account : null;
   },
 
-  init() {
-    const cookie = route.req.headers['cookie'];
+  init(req: http.IncomingMessage) {
+    const cookieHeader = req.headers['cookie'];
     if (!cookieHeader) return null;
 
     const cookies = parseCookie(cookieHeader);
@@ -227,7 +171,7 @@ const auth = {
     if (!payload) return null;
 
     const decodedPayload = Buffer.from(payload, 'base64').toString('utf-8');
-    const account = JSON.parse(decodedPayload);
+    const account = Account.parse(JSON.parse(decodedPayload));
 
     Auth.set({ account });
   },
