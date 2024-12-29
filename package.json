@@ -5,18 +5,17 @@
   "scripts": {
     "format": "biome format",
     "test": "node --test -r tsx/cjs src/**/*.test.ts",
-    "build": "tsup --tsconfig tsconfig.dist.json --format esm,cjs src/index.ts"
+    "build": "tsc --project tsconfig.dist.json"
   },
   "exports": {
     ".": {
       "require": "./dist/index.js",
-      "import": "./dist/index.mjs"
+      "import": "./dist/index.js"
     }
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@types/node": "^22.10.2",
-    "tsup": "^8.3.5",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   }
