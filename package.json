@@ -1,5 +1,5 @@
 {
-  "name": "async_store",
+  "name": "@dabomb/async_store",
   "version": "0.0.1",
   "scripts": {
     "format": "biome format",

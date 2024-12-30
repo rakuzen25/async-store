@@ -5,7 +5,7 @@ Async Store is a small wrap around Node's [`AsyncLocalStorage`](https://nodejs.o
 You can get started by installing `async_store` via NPM:
 
 ```sh
-npm install async_store
+npm i async_store@dabomb/async_store
 ```
 
 ## Usage Examlpes
