@@ -1,7 +1,6 @@
 {
   "name": "async_store",
   "version": "0.0.1",
-  "private": true,
   "scripts": {
     "format": "biome format",
     "test": "node --test -r tsx/cjs src/**/*.test.ts",
