@@ -1,6 +1,13 @@
 import { AsyncScope } from "./async_scope";
 
 export class AsyncVar<T> {
+  static NotFoundError = class extends Error {
+    constructor(name: string) {
+      super(`Variable "${name}" not found`);
+      this.name = "AsyncVarNotFoundError";
+    }
+  };
+
   readonly #symbol: symbol;
 
   constructor(
@@ -20,7 +27,7 @@ export class AsyncVar<T> {
   get(silent?: false): T;
   get(silent = false) {
     if (!silent && !this.exists(false)) {
-      throw new Error(`Varialble "${this.name}" not found`);
+      throw new AsyncVar.NotFoundError(this.name);
     }
 
     const scope = AsyncScope.get(silent);
