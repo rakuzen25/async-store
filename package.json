@@ -1,6 +1,10 @@
 {
-  "name": "@dabomb/async_store",
-  "version": "0.0.1",
+  "name": "@rakuzen25/async-store",
+  "version": "0.0.2",
+  "author": "rakuzen25",
+  "contributors": [
+    "dab0mb"
+  ],
   "scripts": {
     "format": "biome format",
     "test": "node --test -r tsx/cjs src/**/*.test.ts",
