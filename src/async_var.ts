@@ -8,31 +8,53 @@ export class AsyncVar<T> {
     }
   };
 
+  static set<T>(name: string, value: T) {
+    const scope = AsyncScope.get();
+    scope[Symbol.for(name)] = value;
+  }
+
+  static get<T>(name: string, silent: boolean): T | undefined;
+  static get<T>(name: string, silent?: false): T;
+  static get<T>(name: string, silent = false): T | undefined {
+    const scope = AsyncScope.get(silent);
+    if (!scope) {
+      return;
+    }
+
+    const symbol = Symbol.for(name);
+    if (!(symbol in scope)) {
+      if (!silent) {
+        throw new AsyncVar.NotFoundError(name);
+      }
+      return;
+    }
+
+    return scope[symbol] as T;
+  }
+
   readonly #symbol: symbol;
 
-  constructor(
-    readonly name: string,
-    global?: boolean,
-  ) {
-    this.#symbol = global ? Symbol.for(name) : Symbol(name);
+  constructor(readonly name: string) {
+    this.#symbol = Symbol(name);
   }
 
   set(value: T) {
     const scope = AsyncScope.get();
-
     scope[this.#symbol] = value;
   }
 
   get(silent: boolean): T | undefined;
   get(silent?: false): T;
   get(silent = false) {
-    if (!silent && !this.exists(false)) {
-      throw new AsyncVar.NotFoundError(this.name);
+    if (!this.exists(silent)) {
+      if (!silent) {
+        throw new AsyncVar.NotFoundError(this.name);
+      }
+      return;
     }
 
     const scope = AsyncScope.get(silent);
-
-    return scope ? (scope[this.#symbol] as T) : undefined;
+    return scope ? scope[this.#symbol] : undefined;
   }
 
   exists(silent = false) {
