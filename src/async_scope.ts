@@ -7,10 +7,12 @@ export interface AsyncScope {
 }
 
 export class AsyncScope {
-  static get() {
+  static get(slient: boolean): AsyncScope | undefined;
+  static get(silent?: false): AsyncScope;
+  static get(silent = false) {
     const scope = storage.getStore();
 
-    if (!scope) {
+    if (!scope && !silent) {
       throw new Error("Scope not found");
     }
 

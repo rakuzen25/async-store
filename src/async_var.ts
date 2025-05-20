@@ -1,29 +1,36 @@
 import { AsyncScope } from "./async_scope";
 
 export class AsyncVar<T> {
-  private readonly symbol = Symbol(this.name);
+  readonly #symbol: symbol;
 
-  constructor(readonly name: string) {}
+  constructor(
+    readonly name: string,
+    global?: boolean,
+  ) {
+    this.#symbol = global ? Symbol.for(name) : Symbol(name);
+  }
 
   set(value: T) {
     const scope = AsyncScope.get();
 
-    scope[this.symbol] = value;
+    scope[this.#symbol] = value;
   }
 
-  get() {
-    if (!this.exists()) {
+  get(silent: boolean): T | undefined;
+  get(silent?: false): T;
+  get(silent = false) {
+    if (!silent && !this.exists(false)) {
       throw new Error(`Varialble "${this.name}" not found`);
     }
 
-    const scope = AsyncScope.get();
+    const scope = AsyncScope.get(silent);
 
-    return scope[this.symbol] as T;
+    return scope ? (scope[this.#symbol] as T) : undefined;
   }
 
-  exists() {
-    const scope = AsyncScope.get();
+  exists(silent = false) {
+    const scope = AsyncScope.get(silent);
 
-    return this.symbol in scope;
+    return scope ? this.#symbol in scope : false;
   }
 }
