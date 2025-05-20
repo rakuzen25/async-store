@@ -6,6 +6,7 @@
     "dab0mb"
   ],
   "scripts": {
+    "prepare": "pnpm run build",
     "format": "biome format",
     "test": "node --test -r tsx/cjs src/**/*.test.ts",
     "build": "tsc --project tsconfig.dist.json"
