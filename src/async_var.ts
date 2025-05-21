@@ -39,6 +39,16 @@ export class AsyncVar<T> {
     }
   }
 
+  static with<T, TRet>(name: string, value: T, fn: () => TRet): TRet {
+    AsyncVar.set(name, value);
+    const res = fn();
+    if (res instanceof Promise) {
+      return res.finally(() => AsyncVar.unset(name)) as TRet;
+    }
+    AsyncVar.unset(name);
+    return res;
+  }
+
   readonly #symbol: symbol;
 
   constructor(readonly name: string) {
@@ -69,6 +79,16 @@ export class AsyncVar<T> {
     if (scope) {
       delete scope[this.#symbol];
     }
+  }
+
+  with<TRet>(value: T, fn: () => TRet): TRet {
+    this.set(value);
+    const res = fn();
+    if (res instanceof Promise) {
+      return res.finally(() => this.unset()) as TRet;
+    }
+    this.unset();
+    return res;
   }
 
   exists(silent = false) {
