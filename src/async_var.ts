@@ -32,6 +32,13 @@ export class AsyncVar<T> {
     return scope[symbol] as T;
   }
 
+  static unset(name: string) {
+    const scope = AsyncScope.get();
+    if (scope) {
+      delete scope[Symbol.for(name)];
+    }
+  }
+
   readonly #symbol: symbol;
 
   constructor(readonly name: string) {
@@ -57,9 +64,15 @@ export class AsyncVar<T> {
     return scope ? scope[this.#symbol] : undefined;
   }
 
+  unset() {
+    const scope = AsyncScope.get();
+    if (scope) {
+      delete scope[this.#symbol];
+    }
+  }
+
   exists(silent = false) {
     const scope = AsyncScope.get(silent);
-
     return scope ? this.#symbol in scope : false;
   }
 }
